@@ -1043,6 +1043,9 @@ class TrainingArguments:
             "help": "Whether to restore the callback states from the checkpoint. If `True`, will override callbacks passed to the `Trainer` if they exist in the checkpoint."
         },
     )
+    reset_lr_scheduler: bool = field(
+        default=False,
+    )
     no_cuda: bool = field(
         default=False,
         metadata={"help": "This argument is deprecated. It will be removed in version 5.0 of 🤗 Transformers."},
