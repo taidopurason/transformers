@@ -2428,7 +2428,7 @@ class Trainer:
         if self.is_deepspeed_enabled:
             optimizer, lr_scheduler = deepspeed_init(self, num_training_steps=max_steps)
             self.optimizer = optimizer
-            if not self.args.reset_lr_schedule:
+            if not self.args.reset_lr_scheduler:
                 self.lr_scheduler = lr_scheduler
 
         if not delay_optimizer_creation:
@@ -2543,12 +2543,12 @@ class Trainer:
             self.compare_trainer_and_checkpoint_args(self.args, self.state)
             self._load_callback_state()
             epochs_trained = int(self.state.global_step // num_update_steps_per_epoch)
-            if self.args.reset_lr_schedule:
+            if self.args.reset_lr_scheduler:
                 epochs_trained = 0
                 self.state.epoch = 0
                 self.state.global_step = 0
 
-            if not args.ignore_data_skip and not self.args.reset_lr_schedule:
+            if not args.ignore_data_skip and not self.args.reset_lr_scheduler:
                 steps_trained_in_current_epoch = self.state.global_step % (num_update_steps_per_epoch)
                 steps_trained_in_current_epoch *= args.gradient_accumulation_steps
             else:
@@ -3497,7 +3497,7 @@ class Trainer:
         if checkpoint is None:
             return
 
-        if self.is_deepspeed_enabled and not self.args.reset_lr_schedule:
+        if self.is_deepspeed_enabled and not self.args.reset_lr_scheduler:
             # deepspeed loads optimizer/lr_scheduler together with the model in deepspeed_init
             if not isinstance(self.lr_scheduler, DeepSpeedSchedulerWrapper):
                 with warnings.catch_warnings(record=True) as caught_warnings:
@@ -3560,7 +3560,7 @@ class Trainer:
                 xm.send_cpu_data_to_device(lr_scheduler_state, self.args.device)
 
                 self.optimizer.load_state_dict(optimizer_state)
-                if not self.args.reset_lr_schedule:
+                if not self.args.reset_lr_scheduler:
                     self.lr_scheduler.load_state_dict(lr_scheduler_state)
             else:
                 if is_sagemaker_mp_enabled():
@@ -3601,7 +3601,7 @@ class Trainer:
                                 os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location, weights_only=True
                             )
                         )
-                if not self.args.reset_lr_schedule:
+                if not self.args.reset_lr_scheduler:
                     with warnings.catch_warnings(record=True) as caught_warnings:
                         check_torch_load_is_safe()
                         self.lr_scheduler.load_state_dict(
