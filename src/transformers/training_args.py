@@ -1039,6 +1039,15 @@ class TrainingArguments:
     )
     reset_lr_scheduler: bool = field(
         default=False,
+        metadata={
+            "help": "Does not load the scheduler when resuming the training"
+        },
+    )
+    reset_trainer_state: bool = field(
+        default=False,
+        metadata={
+            "help": "Does not load the training state when resuming the training"
+        },
     )
     no_cuda: bool = field(
         default=False,
