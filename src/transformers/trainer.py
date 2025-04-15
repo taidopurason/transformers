@@ -2547,6 +2547,18 @@ class Trainer:
                 epochs_trained = 0
                 self.state.epoch = 0
                 self.state.global_step = 0
+                if self.args.eval_steps is not None and self.state.eval_steps != self.args.eval_steps:
+                    logger.warning(
+                        f"Overriding eval_steps in the loaded state ({self.state.eval_steps})"
+                        f" with the ones in the training args ({self.args.eval_steps})."
+                    )
+                    self.state.eval_steps = self.args.eval_steps
+                if self.args.save_steps is not None and self.state.save_steps != self.args.save_steps:
+                    logger.warning(
+                        f"Overriding save_steps in the loaded state ({self.state.save_steps})"
+                        f" with the ones in the training args ({self.args.save_steps})."
+                    )
+                    self.state.save_steps = self.args.save_steps
 
             if not args.ignore_data_skip and not self.args.reset_lr_scheduler:
                 steps_trained_in_current_epoch = self.state.global_step % (num_update_steps_per_epoch)
